@@ -31,7 +31,7 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
-import util
+import util 
 import sys
 import copy
 
@@ -112,6 +112,29 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+    
+def recursive_LDS(node, problem, limit, solution, visited, border):
+    visited.push(node)          # comeca adicionando o noh na lista de visitados
+    if problem.goalTest(node):  # verifica se o noh eh o objetivo
+        return True             # se sim retorna para adicionar na lista de solucoes
+    elif limit == 0:            # se a profundidade for zero, retorna falso
+        return False
+    else:   
+        actions = util.Queue()      # cria uma lista de acoes
+        for action in problem.getActions(node):              
+            new_node = problem.getResult(node, action)  
+            actions.push(action)    # adiciona as acoes validas na lista de acoes
+            border.push(new_node)   # adiciona o novo noh na lista de limites
+
+        for action in actions.list:
+            new_node = border.pop()     # retira o ultimo noh
+            if new_node not in visited.list and new_node not in border.list:    # verifica se o noh esta em alguma das listas
+                result = recursive_LDS(new_node, problem, (limit-1), solution, visited, border) # se nao estah, faz a busca novamente
+                if result:
+                    solution.push(action)   # se encontar o noh, adiciona na lista de solucoes
+                    return True
+    return False
+        
 
 def iterativeDeepeningSearch(problem):
     """
@@ -120,14 +143,26 @@ def iterativeDeepeningSearch(problem):
     Begin with a depth of 1 and increment depth by 1 at every step.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    depth = 0    
+    while True:
+        visited = util.Queue()
+        solution = util.Queue()
+        border = util.Stack()
+        
+        result = recursive_LDS(problem.getStartState(), problem, depth, solution, visited, border)
+        
+        if result:    
+            return solution.list
+        depth += 1
 
-def aStarSearch(problem, heuristic=nullHeuristic):
+def aStarSearch(problem, heuristic=nullHeuristic, node, possible_solution, cost, solution, visited):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    
 
 # Abbreviations
 bfs = breadthFirstSearch
 astar = aStarSearch
 ids = iterativeDeepeningSearch
+tms = tinyMazeSearch
