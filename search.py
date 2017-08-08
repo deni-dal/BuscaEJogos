@@ -112,7 +112,7 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
-
+###################################################################################
 def iterativeDeepeningSearch(problem):
     """
     Perform DFS with increasingly larger depth.
@@ -120,12 +120,54 @@ def iterativeDeepeningSearch(problem):
     Begin with a depth of 1 and increment depth by 1 at every step.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    x = 1;
+    while True:
+        visited = util.Queue() #hummmmmmm
+        solution = util.Queue() #hummmmm
+        border = util.Stack() #border??? frontierrr????
+        result = BPLRecursive(problem.getStartState(), problem, x, solution, visited, border)
+        x += 1
+        if result != 0:            
+            return solution.list
+    
+    
 
+def BPLRecursive(node, problem, limit, solution, visited, border):
+    # marcar o no visitado???
+    # testar se e objetivo
+    # se o limite for 0 retorna oque?
+    # senaooooooo
+    cut = False
+    visited.push(node)
+    if problem.goalTest(node):
+        return True
+    elif limit > 0:
+        actions = util.Queue()
+        for action in problem.getActions(node):
+            node_child = problem.getResult(node, action)
+            actions.push(action)
+            border.push(node_child)
+        for action in actions.list:
+            node_child = border.pop()
+            if node_child not in visited.list and node_child not in border.list:
+                result = BPLRecursive(node_child, problem, limit - 1, solution, visited, border)
+                if result:
+                    solution.push(action)
+                    return True
+        return False
+
+#####################################################################################
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+
+def convertOriginMapToActionList(node, originMap):
+	actionsList = []
+	while node in originMap:
+		node, action = originMap[node]
+		actionsList.insert(0, action)	
+	return actionsList    
 
 # Abbreviations
 bfs = breadthFirstSearch
