@@ -114,24 +114,24 @@ def nullHeuristic(state, problem=None):
     return 0
     
 def recursive_LDS(node, problem, limit, solution, visited, border):
-    visited.push(node)          # comeca adicionando o noh na lista de visitados
-    if problem.goalTest(node):  # verifica se o noh eh o objetivo
+    visited.push(node)          # comeca adicionando o no na lista de visitados
+    if problem.goalTest(node):  # verifica se o no e o objetivo
         return True             # se sim retorna para adicionar na lista de solucoes
     elif limit == 0:            # se a profundidade for zero, retorna falso
         return False
     else:   
         actions = util.Queue()      # cria uma lista de acoes
         for action in problem.getActions(node):              
-            new_node = problem.getResult(node, action)  
+            new_node = problem.getResult(node, action)  #expande o no 
             actions.push(action)    # adiciona as acoes validas na lista de acoes
-            border.push(new_node)   # adiciona o novo noh na lista de limites
+            border.push(new_node)   # adiciona o novo no na lista de bordas
 
         for action in actions.list:
-            new_node = border.pop()     # retira o ultimo noh
-            if new_node not in visited.list and new_node not in border.list:    # verifica se o noh esta em alguma das listas
-                result = recursive_LDS(new_node, problem, (limit-1), solution, visited, border) # se nao estah, faz a busca novamente
+            new_node = border.pop()     # retira o ultimo no
+            if new_node not in visited.list and new_node not in border.list:    # verifica se o no esta em alguma das listas
+                result = recursive_LDS(new_node, problem, (limit-1), solution, visited, border) # se nao esta, faz a busca novamente
                 if result:
-                    solution.push(action)   # se encontar o noh, adiciona na lista de solucoes
+                    solution.push(action)   # se encontrar o no, adiciona na lista de solucoes
                     return True
     return False
         
@@ -142,8 +142,7 @@ def iterativeDeepeningSearch(problem):
 
     Begin with a depth of 1 and increment depth by 1 at every step.
     """
-    "*** YOUR CODE HERE ***"
-    depth = 0    
+    depth = 0   
     while True:
         visited = util.Queue()
         solution = util.Queue()
@@ -155,10 +154,53 @@ def iterativeDeepeningSearch(problem):
             return solution.list
         depth += 1
 
-def aStarSearch(problem, heuristic=nullHeuristic, node, possible_solution, cost, solution, visited):
+def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    '''cost = 0
+    possible_solution = util.Stack()
+    visited = util.Queue()
+    solution = util.Queue()
 
+    result = recursive_AStar(problem.getStartState(), problem, heuristic, possible_solution, cost, solution, visited)
+
+    if result:
+        return solution.list'''
+    util.raiseNotDefined()
+
+    
+def recursive_AStar(node, problem, heuristic, possible_solution, cost, solution, visited):
+    '''visited.push(node)
+    if problem.goalTest(node):
+        return True
+    
+    successor = problem.getResult(node, action)
+
+    if len(successor) == 0:
+        return False
+    
+    for s in successor:
+        s.f = max(s.g + s.h, no.f)
+
+    while True:
+        best = valor f mais baixo do no em sucessors
+        if best.f > f_limite:
+            return False
+        possible_solution = segundo valor mais baixo em sucessors
+        result = recursive_AStar(best, problem)
+        if result:
+            solution.push(action)   # se encontar o noh, adiciona na lista de solucoes
+                    return True
+    return False'''
+    util.raiseNotDefined()
+
+        
+
+        
+        
+        
+
+    
     
 
 # Abbreviations
