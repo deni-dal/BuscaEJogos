@@ -31,7 +31,7 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
-import util
+import util 
 import sys
 import copy
 
@@ -112,6 +112,29 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+    
+def recursive_LDS(node, problem, limit, solution, visited, border):
+    visited.push(node)          # comeca adicionando o no na lista de visitados
+    if problem.goalTest(node):  # verifica se o no e o objetivo
+        return True             # se sim retorna para adicionar na lista de solucoes
+    elif limit == 0:            # se a profundidade for zero, retorna falso
+        return False
+    else:   
+        actions = util.Queue()      # cria uma lista de acoes
+        for action in problem.getActions(node):              
+            new_node = problem.getResult(node, action)  #expande o no 
+            actions.push(action)    # adiciona as acoes validas na lista de acoes
+            border.push(new_node)   # adiciona o novo no na lista de bordas
+
+        for action in actions.list:
+            new_node = border.pop()     # retira o ultimo no
+            if new_node not in visited.list and new_node not in border.list:    # verifica se o no esta em alguma das listas
+                result = recursive_LDS(new_node, problem, (limit-1), solution, visited, border) # se nao esta, faz a busca novamente
+                if result:
+                    solution.push(action)   # se encontrar o no, adiciona na lista de solucoes
+                    return True
+    return False
+        
 
 def iterativeDeepeningSearch(problem):
     """
@@ -119,15 +142,70 @@ def iterativeDeepeningSearch(problem):
 
     Begin with a depth of 1 and increment depth by 1 at every step.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    depth = 1   
+    while True:
+        visited = util.Queue()
+        solution = util.Queue()
+        border = util.Stack()
+        
+        result = recursive_LDS(problem.getStartState(), problem, depth, solution, visited, border)
+        
+        if result:    
+            return solution.list
+        depth += 1
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    solution = [] # lista nos para solucao
+    node = problem.getStartState();     # estado inicial
+    possible_solution = util.PriorityQueue()   # Fila onde cada item possui uma prioridade determinada 
+    
+    node_cost = heuristic(node, problem) # custo inicial 
+
+    visited = util.Queue()  # Lista de nos ja visitados - FIFO
+    visited.push(node)
+
+    solution = recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solution, visited) 
+
+    return solution
+
+         
+def recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solution, visited):
+    while True:
+        if problem.goalTest(node): # Verifica se o no ja e o objetivo
+            return solution
+    
+        for action in problem.getActions(node):
+            new_solution = copy.copy(solution)
+            new_solution.append(action)
+            result_node = problem.getResult(node, action)   # expande o no  
+            #action_cost = calculate_cost(node, action, result_node, problem, node_cost - heuristic(node, problem), heuristic) # calculo do custo do no atual
+            
+                            #custo entre o no espandido    + custo entre o no atual e o proximo  + (custo inicialgi - custo atual)
+            action_cost = (heuristic(result_node, problem) + problem.getCost(node, action)) + (node_cost - heuristic(node, problem))
+            possible_solution.push((result_node, action_cost, new_solution), action_cost)   # adiciona o no a lista de possiveis solucoes, o custo equivale a prioridade do item
+
+        new_solution_found = False
+        while not new_solution_found:
+            if possible_solution.isEmpty():
+                return False
+            
+            (node, node_cost, solution) = possible_solution.pop() # verificar o que essa lista significa
+
+            if node not in visited.list:
+                visited.push(node)      # se o no ainda nao tiver sido visitado, adiciona na lista
+                new_solution_found = True   
+
+def calculate_cost(node, action, result_node, problem, actual_cost, heuristic):
+    cost = problem.getCost(node, action)
+
+    if cost:
+        return heuristic(result_node, problem) + cost + actual_cost
+    else:
+        return heuristic(result_node, problem) + actual_cost
 
 # Abbreviations
 bfs = breadthFirstSearch
 astar = aStarSearch
 ids = iterativeDeepeningSearch
+tms = tinyMazeSearch
