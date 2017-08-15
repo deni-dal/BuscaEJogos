@@ -142,7 +142,7 @@ def iterativeDeepeningSearch(problem):
 
     Begin with a depth of 1 and increment depth by 1 at every step.
     """
-    depth = 0   
+    depth = 1   
     while True:
         visited = util.Queue()
         solution = util.Queue()
@@ -156,52 +156,53 @@ def iterativeDeepeningSearch(problem):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    '''cost = 0
-    possible_solution = util.Stack()
-    visited = util.Queue()
-    solution = util.Queue()
-
-    result = recursive_AStar(problem.getStartState(), problem, heuristic, possible_solution, cost, solution, visited)
-
-    if result:
-        return solution.list'''
-    util.raiseNotDefined()
-
+    solution = [] # lista nos para solucao
+    node = problem.getStartState();     # estado inicial
+    possible_solution = util.PriorityQueue()   # Fila onde cada item possui uma prioridade determinada 
     
-def recursive_AStar(node, problem, heuristic, possible_solution, cost, solution, visited):
-    '''visited.push(node)
-    if problem.goalTest(node):
-        return True
-    
-    successor = problem.getResult(node, action)
+    node_cost = heuristic(node, problem) # custo inicial 
 
-    if len(successor) == 0:
-        return False
-    
-    for s in successor:
-        s.f = max(s.g + s.h, no.f)
+    visited = util.Queue()  # Lista de nos ja visitados - FIFO
+    visited.push(node)
 
+    solution = recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solution, visited) 
+
+    return solution
+
+         
+def recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solution, visited):
     while True:
-        best = valor f mais baixo do no em sucessors
-        if best.f > f_limite:
-            return False
-        possible_solution = segundo valor mais baixo em sucessors
-        result = recursive_AStar(best, problem)
-        if result:
-            solution.push(action)   # se encontar o noh, adiciona na lista de solucoes
-                    return True
-    return False'''
-    util.raiseNotDefined()
-
-        
-
-        
-        
-        
-
+        if problem.goalTest(node): # Verificacao se o no ja e o objetivo
+            return solution
     
-    
+        for action in problem.getActions(node):
+            new_solution = copy.copy(solution)
+            new_solution.append(action)
+            result_node = problem.getResult(node, action)   # expande o no  
+            #action_cost = calculate_cost(node, action, result_node, problem, node_cost - heuristic(node, problem), heuristic) # calculo do custo do no atual
+            
+                            #custo entre o no espandido    + custo entre o no atual e o proximo  + (custo inicial - custo atual)
+            action_cost = (heuristic(result_node, problem) + problem.getCost(node, action)) + (node_cost - heuristic(node, problem))
+            possible_solution.push((result_node, action_cost, new_solution), action_cost)   # adiciona o no a lista de possiveis solucoes, o custo equivale a prioridade do item
+
+        new_solution_found = False
+        while not new_solution_found:
+            if possible_solution.isEmpty():
+                return False
+            
+            (node, node_cost, solution) = possible_solution.pop() # verificar o que essa lista significa
+
+            if node not in visited.list:
+                visited.push(node)      # se o no ainda nao tiver sido visitado, adiciona na lista
+                new_solution_found = True   
+
+def calculate_cost(node, action, result_node, problem, actual_cost, heuristic):
+    cost = problem.getCost(node, action)
+
+    if cost:
+        return heuristic(result_node, problem) + cost + actual_cost
+    else:
+        return heuristic(result_node, problem) + actual_cost
 
 # Abbreviations
 bfs = breadthFirstSearch
