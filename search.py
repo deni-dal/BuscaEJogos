@@ -172,7 +172,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
          
 def recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solution, visited):
     while True:
-        if problem.goalTest(node): # Verificacao se o no ja e o objetivo
+        if problem.goalTest(node): # Verifica se o no ja e o objetivo
             return solution
     
         for action in problem.getActions(node):
@@ -181,7 +181,7 @@ def recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solu
             result_node = problem.getResult(node, action)   # expande o no  
             #action_cost = calculate_cost(node, action, result_node, problem, node_cost - heuristic(node, problem), heuristic) # calculo do custo do no atual
             
-                            #custo entre o no espandido    + custo entre o no atual e o proximo  + (custo inicial - custo atual)
+                            #custo entre o no espandido    + custo entre o no atual e o proximo  + (custo inicialgi - custo atual)
             action_cost = (heuristic(result_node, problem) + problem.getCost(node, action)) + (node_cost - heuristic(node, problem))
             possible_solution.push((result_node, action_cost, new_solution), action_cost)   # adiciona o no a lista de possiveis solucoes, o custo equivale a prioridade do item
 
