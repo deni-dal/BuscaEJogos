@@ -160,7 +160,22 @@ def BPLRecursive(node, problem, limit, solution, visited, border):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    soluction = []                     #caminho de retorno -> solucao
+    startState = problem.getStartState()
+    listaaberta = util.PriorityQueue() #Fila preferencial
+    listafechada = util.Queue()        #Fila comum
+    node = problem.getStartState()     #node atual e o inicio
+    listaaberta.push(startState,0)     #aqui nao precisa calcular o custo do inicial que e 0
+    while len(listaaberta) is not 0
+        node = listaaberta.pop()       #retira o no atual da lista aberta
+        listafechada.push(node)        #insere o no atual na lista fechada
+        if problem.goalTest(node)      #caminho encontrado
+            return soluction     
+        if len(listaaberta) is 0       #caminho nao encontrado
+            return soluction
+        
+	
+def recursiveastar(node, problem, heuristic, possible_solution, node_cost, solution, visited): 
 
 def convertOriginMapToActionList(node, originMap):
 	actionsList = []
