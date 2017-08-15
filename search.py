@@ -209,3 +209,9 @@ bfs = breadthFirstSearch
 astar = aStarSearch
 ids = iterativeDeepeningSearch
 tms = tinyMazeSearch
+
+# Comando Busca A* 
+#python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic
+
+# Comando Busca Iterative Deep Search
+#python pacman.py -l tinyMaze -p SearchAgent -a fn=ids
