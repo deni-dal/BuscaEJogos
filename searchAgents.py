@@ -378,12 +378,33 @@ def cornersHeuristic(state, problem):
     This function should always return a number that is a lower bound on the
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
+
+    Pegar a posicao dos cantos e calcular a distancia entre a posicao atual e os cantos 
+    Deve retornar a distancia do caminho mais curto
+    Passar por cada canto verificar se ja foi visitado entao calcular a distancia
+
+    heuristica otimista 0 <= h(n) <= h * (n)
     """
-    corners = problem.corners # These are the corner coordinates
+    corners = problem.corners # These are the corner coordinates / Coordenadas dos cantos
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    actual_position, visited_corners  = state
+    positionX, positionY = actual_position
+    distance = 0
+    number_of_corners = 0
+
+    if len(corners) == len(visited_corners):
+        return 0 # Default to trivial solution
+
+    for corner in corners:
+        cornerX, cornerY = corner
+        if corner not in visited_corners:
+            number_of_corners += 1
+            result += abs(positionX - cornerX) + abs(positionY - cornerY)
+
+    return result / number_of_corners
+
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

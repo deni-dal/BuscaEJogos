@@ -157,7 +157,7 @@ def iterativeDeepeningSearch(problem):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     solution = [] # lista nos para solucao
-    node = problem.getStartState();     # estado inicial
+    node = problem.getStartState()     # estado inicial
     possible_solution = util.PriorityQueue()   # Fila onde cada item possui uma prioridade determinada 
     
     node_cost = heuristic(node, problem) # custo inicial 
@@ -168,7 +168,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     solution = recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solution, visited) 
 
     return solution
-
          
 def recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solution, visited):
     while True:
@@ -179,9 +178,8 @@ def recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solu
             new_solution = copy.copy(solution)
             new_solution.append(action)
             result_node = problem.getResult(node, action)   # expande o no  
-            #action_cost = calculate_cost(node, action, result_node, problem, node_cost - heuristic(node, problem), heuristic) # calculo do custo do no atual
             
-                            #custo entre o no espandido    + custo entre o no atual e o proximo  + (custo inicialgi - custo atual)
+                            #custo entre o no expandido    + custo entre o no atual e o proximo  + (custo inicial - custo atual)
             action_cost = (heuristic(result_node, problem) + problem.getCost(node, action)) + (node_cost - heuristic(node, problem))
             possible_solution.push((result_node, action_cost, new_solution), action_cost)   # adiciona o no a lista de possiveis solucoes, o custo equivale a prioridade do item
 
@@ -189,20 +187,12 @@ def recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solu
         while not new_solution_found:
             if possible_solution.isEmpty():
                 return False
-            
-            (node, node_cost, solution) = possible_solution.pop() # verificar o que essa lista significa
+
+            (node, node_cost, solution) = possible_solution.pop() # verificar o que essa lista significa para simplificar
 
             if node not in visited.list:
                 visited.push(node)      # se o no ainda nao tiver sido visitado, adiciona na lista
                 new_solution_found = True   
-
-def calculate_cost(node, action, result_node, problem, actual_cost, heuristic):
-    cost = problem.getCost(node, action)
-
-    if cost:
-        return heuristic(result_node, problem) + cost + actual_cost
-    else:
-        return heuristic(result_node, problem) + actual_cost
 
 # Abbreviations
 bfs = breadthFirstSearch
@@ -211,7 +201,7 @@ ids = iterativeDeepeningSearch
 tms = tinyMazeSearch
 
 # Comando Busca A* 
-#python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic
+#python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=euclideanHeuristic
 
 # Comando Busca Iterative Deep Search
 #python pacman.py -l tinyMaze -p SearchAgent -a fn=ids
