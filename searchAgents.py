@@ -505,8 +505,17 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    
+    foods = foodGrid.asList() # List of foods
+    
+    r =0
+    
+    """Use the Manhattan Heuristic"""    
+    
+    for nodo in foods:
+        r = max(r,util.manhattanDistance(position,nodo))
+        
+    return r
 
 def mazeDistance(point1, point2, gameState):
     """
