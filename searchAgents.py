@@ -504,7 +504,7 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
-    position, foodGrid = state
+    position, foodGrid = state # atual
     
     foods = foodGrid.asList() # List of foods
     
