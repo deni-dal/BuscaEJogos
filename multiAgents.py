@@ -156,7 +156,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        '''next_action = None
+        next_action = None
         actions = gameState.getLegalActions(0)
         max_value = -float("inf")
 
@@ -166,8 +166,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 next_action = action
                 max_value = value
         
-        return next_action'''          
-        util.raiseNotDefined()
+        return next_action         
+        
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -184,15 +184,15 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         
 
-    def expectimax(self, gameState, depth, index):
+    '''def expectimax(self, gameState, depth, index):
         if gameState.isWin() or gameState.isLose() or depth == self.depth * gameState.getNumAgents():  # verifica se eh o fim do jogo ou profundidade = 0
             return self.evaluationFunction(gameState)    # retorna
 
         actions = gameState.getLegalActions(index)
 
         for action in actions:
-            next_action = gameState.generateSuccessor(index, action)
-
+            next_action = gameState.generateSuccessor(index, action)'''
+    util.raiseNotDefined()
     
         
 
