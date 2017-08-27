@@ -204,4 +204,4 @@ tms = tinyMazeSearch
 #python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=euclideanHeuristic
 
 # Comando Busca Iterative Deep Search
-#python pacman.py -l tinyMaze -p SearchAgent -a fn=ids
+#python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=ids
