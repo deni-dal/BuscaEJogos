@@ -109,13 +109,18 @@ class MultiAgentSearchAgent(Agent):
 class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 7)
+
+      Algoritmo minimax, eh um algoritmo que determina a acao dos agentes adversarios,
+      O jogador Max sempre considera que o jogador Min vai escolher a jogada que o deixa na pior situacao.
+      A cada jogada o jogador Max procura maximizar suas chances de ganhar enquanto o jogador Min procura 
+      minimizar as chances de isso acontecer. 
     """
 
     def min_max(self, gameState, depth):
         if gameState.isWin() or gameState.isLose() or depth == self.depth * gameState.getNumAgents():  # verifica se eh o fim do jogo ou profundidade = 0
             return self.evaluationFunction(gameState)    # retorna
 
-        if depth % gameState.getNumAgents() == 0: # pacman
+        if depth % gameState.getNumAgents() == 0: # pacman / se for o pacman faz acoes max, senao faz acoes min
             return self.maxValue(gameState, depth, depth % gameState.getNumAgents())
         else : #fantasmas
             return self.minValue(gameState, depth, depth % gameState.getNumAgents())
@@ -125,7 +130,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         max_value = -float("inf")
 
         for action in actions:
-            max_value = max(max_value, self.min_max(gameState.generateSuccessor(index, action), depth+1)) #max(max_value, minValue(gameState, depth-1, alpha, betha)) # calcula qual valor maximo 
+            max_value = max(max_value, self.min_max(gameState.generateSuccessor(index, action), depth+1)) # calcula qual valor maximo 
 
         return max_value
 
@@ -134,7 +139,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         min_value = float("inf")
         
         for action in actions:
-            min_value = min(min_value, self.min_max(gameState.generateSuccessor(index, action), depth+1)) # calcula qual valor maximo 
+            min_value = min(min_value, self.min_max(gameState.generateSuccessor(index, action), depth+1)) # calcula qual valor minimo 
             
         return min_value   
 
@@ -172,6 +177,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 8)
+
+      Diferente do minimax, o expectimax procura o otimizar a escolha de acao, realiza
+      o calculo de probabilidade para escolher a acao que sera realizada.
+      A melhor acao e calculada pela media de pontuacao das acoes
+
     """
 
     def getAction(self, gameState):
@@ -182,19 +192,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        
-
-    '''def expectimax(self, gameState, depth, index):
-        if gameState.isWin() or gameState.isLose() or depth == self.depth * gameState.getNumAgents():  # verifica se eh o fim do jogo ou profundidade = 0
-            return self.evaluationFunction(gameState)    # retorna
-
-        actions = gameState.getLegalActions(index)
-
-        for action in actions:
-            next_action = gameState.generateSuccessor(index, action)'''
-    util.raiseNotDefined()
-    
-        
+        util.raiseNotDefined()
 
 def betterEvaluationFunction(currentGameState):
     """
@@ -208,5 +206,4 @@ def betterEvaluationFunction(currentGameState):
 
 # Abbreviation
 better = betterEvaluationFunction
-
 
