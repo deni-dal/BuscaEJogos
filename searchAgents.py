@@ -516,7 +516,30 @@ def foodHeuristic(state, problem):
         r = max(r,util.manhattanDistance(position,nodo))
         
     return r
-
+    
+    """ 
+    #mediumsearch  : not admissibility
+    visits = state[1]
+    unvisits = []
+    foods = foodGrid.asList()
+    
+    for food in foods:
+      if food not in visits:
+         unvisits.append(food)
+    
+    nP = state[0]
+    custo = 0
+    
+    while len(unvisits) != 0:
+        r,food = max((util.manhattanDistance(nP,food),food)for food in unvisits)
+        custo = custo + r
+        nP = food
+        unvisits.remove(food)
+        
+    
+    return custo 
+    """
+    
 def mazeDistance(point1, point2, gameState):
     """
     Returns the maze distance between any two points, using the search functions
