@@ -65,7 +65,7 @@ class ReflexAgent(Agent):
 
         Print out these variables to see what you're getting, then combine them
         to create a masterful evaluation function.
-        """
+"""        
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
@@ -74,8 +74,30 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        # distancia de manhattan -> distancia para chegar ao objetivo em linha reta?? de cada parte. Soma-se tudo para obter o total da distancia de manhattan
+        pnt = 0 # pontos que marcam distancia entre o pacman e o fantasma, alterando quando o pacman se aproxima muito do fantasma        
+        ghost = 0
+        for ghost in newGhostStates: 
+          distance = manhattanDistance(ghost.getPosition(), newPos) #calculo da distancia a posicao do fantasma e do pacman       
+          if distance > 1:
+            pnt += 1                   
+          else:
+            pnt -= 1        
+        for x in range(newFood.width): #largura           # calculo da distancia entre o pacman e uma comida
+          for y in range(newFood.height): #altura
+            if newFood[x][y] == True: # pega uma posicao x e y e verifica se neste ponto ha comida
+              distance = manhattanDistance((x,y), newPos) # calculo da distancia do pacman e da comida encontrada                      
+              if distance == 0:
+                pnt += 1
+              else:
+                pnt -= 1
+            else:
+              pnt += 1        
+        return pnt
+      
+        return successorGameState.getScore() 
 
+        
 def scoreEvaluationFunction(currentGameState):
     """
       This default evaluation function just returns the score of the state.
