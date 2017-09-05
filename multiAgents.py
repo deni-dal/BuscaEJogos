@@ -87,13 +87,13 @@ class ReflexAgent(Agent):
           for y in range(newFood.height): #altura
             if newFood[x][y] == True: # pega uma posicao x e y e verifica se neste ponto ha comida
               distance = manhattanDistance((x,y), newPos) # calculo da distancia do pacman e da comida encontrada                      
-              if distance == 0:
-                pnt += 1
+              if distance == 0: # quer dizer que chegou na comida
+                pnt += 1 # soma 1 na pontuacao
               else:
-                pnt -= 1
+                pnt -= 1 # diminui 1 na pontuacao
             else:
               pnt += 1        
-        return pnt
+        return pnt # retorna a quantidade de pontos conseguidos ate o termino do jogo
       
         return successorGameState.getScore() 
 
