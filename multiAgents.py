@@ -116,7 +116,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
       minimizar as chances de isso acontecer. 
     """
 
-    def min_max(self, gameState, depth):
+    def min_max(self, gameState, depth): # o metodo minmax faz a verificacao do agente e a chamada da funcao referente a ele
         if gameState.isWin() or gameState.isLose() or depth == self.depth * gameState.getNumAgents():  # verifica se eh o fim do jogo ou profundidade = 0
             return self.evaluationFunction(gameState)    # retorna
 
@@ -125,7 +125,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         else : #fantasmas
             return self.minValue(gameState, depth, depth % gameState.getNumAgents())
 
-    def maxValue(self, gameState, depth, index):       
+    def maxValue(self, gameState, depth, index): # o metodo maxValue verifica o valor maximo entre o valor maximo conhecido e o da proxima acao       
         actions = gameState.getLegalActions(index)
         max_value = -float("inf")
 
@@ -134,7 +134,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         return max_value
 
-    def minValue(self, gameState, depth, index):
+    def minValue(self, gameState, depth, index): # o metodo minValue faz o contrario do maxValue
         actions = gameState.getLegalActions(index) 
         min_value = float("inf")
         
@@ -162,12 +162,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         next_action = None
-        actions = gameState.getLegalActions(0)
+        actions = gameState.getLegalActions(0) # acoes possiveis para o pacman
         max_value = -float("inf")
 
         for action in actions:
-            value = self.min_max(gameState.generateSuccessor(0, action), 1)
-            if value > max_value:
+            value = self.min_max(gameState.generateSuccessor(0, action), 1) # um valor min ou maximo eh dado para acao
+            if value > max_value: 
                 next_action = action
                 max_value = value
         
@@ -178,9 +178,9 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 8)
 
-      Diferente do minimax, o expectimax procura o otimizar a escolha de acao, realiza
+      Diferente do minimax, o expectimax procura otimizar a escolha de acao, realizando um 
       o calculo de probabilidade para escolher a acao que sera realizada.
-      A melhor acao e calculada pela media de pontuacao das acoes
+      A melhor acao e calculada pela media das melhores pontuacoes das acoes
 
     """
 
@@ -192,17 +192,76 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.expectimax(gameState, self.depth, 0)[1]
+
+    def expectimax(self, gameState, depth, index):
+        if depth == 0 or gameState.isWin() or gameState.isLose():  # verifica se eh o fim do jogo ou profundidade = 0
+            return (self.evaluationFunction(gameState), None)      # retorna
+        
+        actions     = gameState.getLegalActions(index)       # lista de acoes possiveis
+        next_index  = (index + 1) % gameState.getNumAgents() # proximo agente
+        if index == gameState.getNumAgents() -1:
+            depth -= 1
+        
+        score_list = {} # dicionario
+        for action in actions:
+            next_action = gameState.generateSuccessor(index, action) # proxima acao 
+            score_list[action] = self.expectimax(next_action, depth, next_index)[0] # realiza o calculo de pontuacao para cada acao possivel
+
+        if index == 0:
+            best_action = max(score_list, key=score_list.get) # melhor acao no conjunto de pontuacoes
+            best_score = score_list[best_action] # melhor pontuacao no conjunto de pontuacoes
+        else:
+            best_action = None
+            best_score = 0.0
+            for score in score_list.values():
+                best_score += score 
+            best_score = best_score / len(score_list) # media das melhores pontuacoes
+
+        return (best_score, best_action)     
 
 def betterEvaluationFunction(currentGameState):
     """
       Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
       evaluation function (question 9).
 
-      DESCRIPTION: <write something here so we know what you did>
+      DESCRIPTION: 
+      calculo de distancia minima entre a posicao do pacman e as comidas. 
+      calculo de distancia minima entre a posicao pacman e a posicao dos fantasmas.
+      O resultado é soma das distancias
+
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    result              = 0
+    min_distance        = 1000
+    is_min_distance     = False
+    pacman_position     = currentGameState.getPacmanPosition()
+    food_position_list  = currentGameState.getFood().asList()  # lista de posicionamento das comidas
+    ghost_position_list = currentGameState.getGhostPositions() # lista de posicionamento dos fantasmas    
+    
+    for food_position in food_position_list: # calcula a distancia entre o pacman e as comidas
+        food_distance = util.manhattanDistance(pacman_position, food_position)
+
+        if food_distance < min_distance: # determina a menor distancia
+            min_distance = food_distance
+            is_min_distance = True
+    
+    if is_min_distance:
+        result += min_distance # soma a menor distancia ao resultado
+
+    result += 1000 * currentGameState.getNumFood()
+    result += 10 * len(currentGameState.getCapsules())
+    
+    
+    for ghost_position in ghost_position_list: # calcula a distancia entre o pacman e os fantasmas
+        ghost_distance = util.manhattanDistance(pacman_position, ghost_position)
+
+        if ghost_distance < 2:
+            result = float("inf") 
+            
+    result -= 10 * currentGameState.getScore()
+    
+    return result * (-1)
 
 # Abbreviation
 better = betterEvaluationFunction

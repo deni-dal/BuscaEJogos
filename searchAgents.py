@@ -55,6 +55,7 @@ import util
 import time
 import search
 import warnings
+import copy
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -313,7 +314,7 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
-
+        
     def getActions(self, state):
         """
         Given a state, returns available actions.
@@ -393,7 +394,7 @@ def cornersHeuristic(state, problem):
     positionX, positionY = actual_position
     distance = 0
     number_of_corners = 0
-
+    
     if len(corners) == len(visited_corners):
         return 0 # Default to trivial solution
 
@@ -401,9 +402,9 @@ def cornersHeuristic(state, problem):
         cornerX, cornerY = corner
         if corner not in visited_corners:
             number_of_corners += 1
-            result += abs(positionX - cornerX) + abs(positionY - cornerY)
+            distance += abs(positionX - cornerX) + abs(positionY - cornerY)
 
-    return result / number_of_corners
+    return distance / number_of_corners
 
 
 class AStarCornersAgent(SearchAgent):
@@ -546,3 +547,6 @@ def mazeDistance(point1, point2, gameState):
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
     prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
     return len(search.bfs(prob))
+
+
+# python pacman.py -l tinyCorners -p SearchAgent -a fn=astar,prob=CornersProblem

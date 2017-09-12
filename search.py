@@ -168,6 +168,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     solution = recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solution, visited) 
 
     return solution
+
          
 def recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solution, visited):
     while True:
@@ -188,7 +189,7 @@ def recursive_AStar(node, problem, heuristic, possible_solution, node_cost, solu
             if possible_solution.isEmpty():
                 return False
 
-            (node, node_cost, solution) = possible_solution.pop() # verificar o que essa lista significa para simplificar
+            (node, node_cost, solution) = possible_solution.pop() # passa os dados do ultimo item da pilha para as variaveis node, node_cost e solution
 
             if node not in visited.list:
                 visited.push(node)      # se o no ainda nao tiver sido visitado, adiciona na lista
