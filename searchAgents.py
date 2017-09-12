@@ -55,6 +55,7 @@ import util
 import time
 import search
 import warnings
+import copy
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -365,7 +366,7 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
-
+# denise
 def cornersHeuristic(state, problem):
     """
     A heuristic for the CornersProblem that you defined.
@@ -378,12 +379,32 @@ def cornersHeuristic(state, problem):
     This function should always return a number that is a lower bound on the
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
+    
+    Pegar a posicao dos cantos e calcular a distancia entre a posicao atual e os cantos 
+    Deve retornar a distancia do caminho mais curto
+    Passar por cada canto verificar se ja foi visitado entao calcular a distancia
+
+    heuristica otimista 0 <= h(n) <= h * (n)
     """
-    corners = problem.corners # These are the corner coordinates
+    corners = problem.corners # These are the corner coordinates / Coordenadas dos cantos
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    actual_position, visited_corners  = state
+    positionX, positionY = actual_position
+    distance = 0
+    number_of_corners = 0
+    
+    if len(corners) == len(visited_corners):
+        return 0 # Default to trivial solution
+
+    for corner in corners:
+        cornerX, cornerY = corner
+        if corner not in visited_corners:
+            number_of_corners += 1
+            distance += abs(positionX - cornerX) + abs(positionY - cornerY)
+
+    return distance / number_of_corners
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -476,6 +497,7 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
 
+# luan
 def foodHeuristic(state, problem):
     """
     Your heuristic for the FoodSearchProblem goes here.
@@ -504,9 +526,18 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
-    position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    position, foodGrid = state # atual
+    
+    foods = foodGrid.asList() # List of foods
+    
+    r =0
+    
+    """Use the Manhattan Heuristic"""    
+    
+    for nodo in foods:
+        r = max(r,util.manhattanDistance(position,nodo))
+        
+    return r
 
 def mazeDistance(point1, point2, gameState):
     """

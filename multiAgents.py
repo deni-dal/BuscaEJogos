@@ -18,6 +18,7 @@ import random, util
 
 from game import Agent
 
+# rafaela
 class ReflexAgent(Agent):
     """
       A reflex agent chooses an action at each choice point by examining
@@ -65,7 +66,7 @@ class ReflexAgent(Agent):
 
         Print out these variables to see what you're getting, then combine them
         to create a masterful evaluation function.
-        """
+"""        
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
@@ -74,7 +75,28 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        # distancia de manhattan -> distancia para chegar ao objetivo em linha reta?? de cada parte. Soma-se tudo para obter o total da distancia de manhattan
+        pnt = 0 # pontos que marcam distancia entre o pacman e o fantasma, alterando quando o pacman se aproxima muito do fantasma        
+        ghost = 0
+        for ghost in newGhostStates: 
+          distance = manhattanDistance(ghost.getPosition(), newPos) #calculo da distancia a posicao do fantasma e do pacman       
+          if distance > 1:
+            pnt += 1                   
+          else:
+            pnt -= 1        
+        for x in range(newFood.width): #largura           # calculo da distancia entre o pacman e uma comida
+          for y in range(newFood.height): #altura
+            if newFood[x][y] == True: # pega uma posicao x e y e verifica se neste ponto ha comida
+              distance = manhattanDistance((x,y), newPos) # calculo da distancia do pacman e da comida encontrada                      
+              if distance == 0: # quer dizer que chegou na comida
+                pnt += 1 # soma 1 na pontuacao
+              else:
+                pnt -= 1 # diminui 1 na pontuacao
+            else:
+              pnt += 1        
+        return pnt # retorna a quantidade de pontos conseguidos ate o termino do jogo
+      
+        return successorGameState.getScore() 
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -106,10 +128,43 @@ class MultiAgentSearchAgent(Agent):
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
 
+# denise
 class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 7)
+    
+      Algoritmo minimax, eh um algoritmo que determina a acao dos agentes adversarios,
+      O jogador Max sempre considera que o jogador Min vai escolher a jogada que o deixa na pior situacao.
+      A cada jogada o jogador Max procura maximizar suas chances de ganhar enquanto o jogador Min procura 
+      minimizar as chances de isso acontecer. 
     """
+
+    def min_max(self, gameState, depth): # o metodo minmax faz a verificacao do agente e a chamada da funcao referente a ele
+        if gameState.isWin() or gameState.isLose() or depth == self.depth * gameState.getNumAgents():  # verifica se eh o fim do jogo ou profundidade = 0
+            return self.evaluationFunction(gameState)    # retorna
+
+        if depth % gameState.getNumAgents() == 0: # pacman / se for o pacman faz acoes max, senao faz acoes min
+            return self.maxValue(gameState, depth, depth % gameState.getNumAgents())
+        else : #fantasmas
+            return self.minValue(gameState, depth, depth % gameState.getNumAgents())
+
+    def maxValue(self, gameState, depth, index): # o metodo maxValue verifica o valor maximo entre o valor maximo conhecido e o da proxima acao       
+        actions = gameState.getLegalActions(index)
+        max_value = -float("inf")
+
+        for action in actions:
+            max_value = max(max_value, self.min_max(gameState.generateSuccessor(index, action), depth+1)) # calcula qual valor maximo 
+
+        return max_value
+
+    def minValue(self, gameState, depth, index): # o metodo minValue faz o contrario do maxValue
+        actions = gameState.getLegalActions(index) 
+        min_value = float("inf")
+        
+        for action in actions:
+            min_value = min(min_value, self.min_max(gameState.generateSuccessor(index, action), depth+1)) # calcula qual valor minimo 
+            
+        return min_value   
 
     def getAction(self, gameState):
         """
@@ -129,11 +184,27 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        next_action = None
+        actions = gameState.getLegalActions(0) # acoes possiveis para o pacman
+        max_value = -float("inf")
 
+        for action in actions:
+            value = self.min_max(gameState.generateSuccessor(0, action), 1) # um valor min ou maximo eh dado para acao
+            if value > max_value: 
+                next_action = action
+                max_value = value
+        
+        return next_action  
+
+# denise
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 8)
+    
+      Diferente do minimax, o expectimax procura otimizar a escolha de acao, realizando um 
+      o calculo de probabilidade para escolher a acao que sera realizada.
+      A melhor acao e calculada pela media das melhores pontuacoes das acoes
+
     """
 
     def getAction(self, gameState):
@@ -144,17 +215,76 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.expectimax(gameState, self.depth, 0)[1]
+
+    def expectimax(self, gameState, depth, index):
+        if depth == 0 or gameState.isWin() or gameState.isLose():  # verifica se eh o fim do jogo ou profundidade = 0
+            return (self.evaluationFunction(gameState), None)      # retorna
+        
+        actions     = gameState.getLegalActions(index)       # lista de acoes possiveis
+        next_index  = (index + 1) % gameState.getNumAgents() # proximo agente
+        if index == gameState.getNumAgents() -1:
+            depth -= 1
+        
+        score_list = {} # dicionario
+        for action in actions:
+            next_action = gameState.generateSuccessor(index, action) # proxima acao 
+            score_list[action] = self.expectimax(next_action, depth, next_index)[0] # realiza o calculo de pontuacao para cada acao possivel
+
+        if index == 0:
+            best_action = max(score_list, key=score_list.get) # melhor acao no conjunto de pontuacoes
+            best_score = score_list[best_action] # melhor pontuacao no conjunto de pontuacoes
+        else:
+            best_action = None
+            best_score = 0.0
+            for score in score_list.values():
+                best_score += score 
+            best_score = best_score / len(score_list) # media das melhores pontuacoes
+
+        return (best_score, best_action)
 
 def betterEvaluationFunction(currentGameState):
     """
       Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
       evaluation function (question 9).
 
-      DESCRIPTION: <write something here so we know what you did>
+      DESCRIPTION: 
+      calculo de distancia minima entre a posicao do pacman e as comidas. 
+      calculo de distancia minima entre a posicao pacman e a posicao dos fantasmas.
+      O resultado eh soma / subtracao entre as distancias dos agentes
+
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    result              = 0
+    min_distance        = 1000
+    is_min_distance     = False
+    pacman_position     = currentGameState.getPacmanPosition()
+    food_position_list  = currentGameState.getFood().asList()  # lista de posicionamento das comidas
+    ghost_position_list = currentGameState.getGhostPositions() # lista de posicionamento dos fantasmas    
+    
+    for food_position in food_position_list: # calcula a distancia entre o pacman e as comidas
+        food_distance = util.manhattanDistance(pacman_position, food_position)
+
+        if food_distance < min_distance: # determina a menor distancia
+            min_distance = food_distance
+            is_min_distance = True
+    
+    if is_min_distance:
+        result += min_distance # soma a menor distancia ao resultado
+
+    result += 1000 * currentGameState.getNumFood()
+    result += 10 * len(currentGameState.getCapsules())
+    
+    
+    for ghost_position in ghost_position_list: # calcula a distancia entre o pacman e os fantasmas
+        ghost_distance = util.manhattanDistance(pacman_position, ghost_position)
+
+        if ghost_distance < 2:
+            result = float("inf") 
+            
+    result -= 10 * currentGameState.getScore()
+    
+    return result * (-1)
 
 # Abbreviation
 better = betterEvaluationFunction
